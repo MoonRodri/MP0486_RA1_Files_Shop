@@ -174,6 +174,8 @@ public class ShopView extends JFrame implements ActionListener, KeyListener
 
 	public void openInventoryView()
 	{
+		// reload inventory from DB before showing
+		shop.loadInventory();
 		// Fallback inventory dialog showing inventory in a scrollable text area
 		JDialog dialog = new JDialog(this, "Inventario", true);
 		dialog.setLayout(new BorderLayout());

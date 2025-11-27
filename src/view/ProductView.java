@@ -160,9 +160,9 @@ public class ProductView extends JDialog implements ActionListener{
 					
 				} else {
 					product = new Product(textFieldName.getText(), 
-							new Amount(Double.parseDouble(textFieldPrice.getText())) ,
-							true,
-							Integer.parseInt(textFieldStock.getText()));
+						new Amount(Double.parseDouble(textFieldPrice.getText())) ,
+						true,
+						Integer.parseInt(textFieldStock.getText()));
 					shop.addProduct(product);
 					JOptionPane.showMessageDialog(null, "Producto añadido ", "Information",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -180,8 +180,10 @@ public class ProductView extends JDialog implements ActionListener{
 					JOptionPane.showMessageDialog(null, "Producto no existe ", "Error",
 							JOptionPane.ERROR_MESSAGE);
 					
-				} else {					
+				} else {                    
 					product.setStock(product.getStock() + Integer.parseInt(textFieldStock.getText()));
+					// persist change to DB
+					shop.updateProduct(product);
 					JOptionPane.showMessageDialog(null, "Stock actualizado ", "Information",
 							JOptionPane.INFORMATION_MESSAGE);
 					// release current screen
@@ -198,8 +200,10 @@ public class ProductView extends JDialog implements ActionListener{
 					JOptionPane.showMessageDialog(null, "Producto no existe ", "Error",
 							JOptionPane.ERROR_MESSAGE);
 					
-				} else {					
+				} else {                    
 					shop.getInventory().remove(product);
+					// persist delete in DB
+					shop.deleteProduct(product);
 					JOptionPane.showMessageDialog(null, "Producto eliminado", "Information",
 							JOptionPane.INFORMATION_MESSAGE);
 					// release current screen
@@ -216,7 +220,7 @@ public class ProductView extends JDialog implements ActionListener{
 		
 		if (e.getSource() == cancelButton) {
 			// release current screen
-			dispose();			
+			dispose();		
 		}		
 	}
 

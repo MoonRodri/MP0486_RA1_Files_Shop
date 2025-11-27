@@ -7,7 +7,7 @@ import model.Client;
 import model.Employee;
 
 import dao.Dao;
-import dao.DaoImplFile;
+import dao.DaoImplJDBC;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,8 +31,8 @@ public class Shop {
 
 	final static double TAX_RATE = 1.04;
 
-	// DAO para operaciones basadas en ficheros
-	private Dao dao = new DaoImplFile();
+	// DAO using JDBC implementation
+	private Dao dao = new DaoImplJDBC();
 
 	public Shop() {
 		inventory = new ArrayList<Product>();
@@ -103,6 +103,15 @@ public class Shop {
 
 	public static void main(String[] args) {
 		Shop shop = new Shop();
+
+		// ensure DAO is closed on JVM shutdown
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				shop.closeDao();
+			} catch (Exception ex) {
+				// ignore
+			}
+		}));
 
 		// load inventory from external data
 		shop.loadInventory();
@@ -195,8 +204,14 @@ public class Shop {
 
 	}
 
-	private void initSession() {
+	private void closeDao() {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	private void initSession() {
 		
 		Employee employee = new Employee("test");
 		boolean logged=false;
@@ -223,19 +238,34 @@ public class Shop {
 	 * load initial inventory to shop
 	 */
 	public void loadInventory() {
-//		addProduct(new Product("Manzana", new Amount(10.00), true, 10));
-//		addProduct(new Product("Pera", new Amount(20.00), true, 20));
-//		addProduct(new Product("Hamburguesa", new Amount(30.00), true, 30));
-//		addProduct(new Product("Fresa", new Amount(5.00), true, 20));
-		// now read from file
+	//	addProduct(new Product("Manzana", new Amount(10.00), true, 10));
+	//	addProduct(new Product("Pera", new Amount(20.00), true, 20));
+	//	addProduct(new Product("Hamburguesa", new Amount(30.00), true, 30));
+	//	addProduct(new Product("Fresa", new Amount(5.00), true, 20));
+		// connect DAO and read inventory from DB
+		dao.connect();
 		this.readInventory();
+
+		// if inventory is empty, retry connect once and try again (diagnose connection issues)
+		if (this.inventory == null || this.inventory.size() == 0) {
+			System.out.println("[Shop] Inventory empty after initial load, retrying DB connection and load...");
+			dao.connect();
+			ArrayList<Product> list = dao.getInventory();
+			if (list != null && list.size() > 0) {
+				this.inventory = list;
+				this.numberProducts = list.size();
+				System.out.println("[Shop] Inventory loaded on retry, size=" + list.size());
+			} else {
+				System.out.println("[Shop] Inventory still empty after retry. Check DB connection and table contents.");
+			}
+		}
 	}
 
 	/**
 	 * read inventory from file
 	 */
 	private void readInventory() {
-		// Use file-based DAO to load inventory
+		// Use DAO to load inventory
 		ArrayList<Product> list = dao.getInventory();
 		if (list != null) {
 			this.inventory = list;
@@ -295,6 +325,8 @@ public class Shop {
 		if (product != null) {
 			// remove it
 			if (inventory.remove(product)) {
+				// persist delete
+				dao.deleteProduct(product);
 				System.out.println("El producto " + name + " ha sido eliminado");
 
 			} else {
@@ -320,6 +352,8 @@ public class Shop {
 			int stock = scanner.nextInt();
 			// update stock product
 			product.setStock(product.getStock() + stock);
+			// persist change
+			dao.updateProduct(product);
 			System.out.println("El stock del producto " + name + " ha sido actualizado a " + product.getStock());
 
 		} else {
@@ -517,10 +551,28 @@ public class Shop {
 			System.out.println("No se pueden añadir más productos, se ha alcanzado el máximo de " + inventory.size());
 			return;
 		}
+		// persist to DB first (will set generated id)
+		dao.addProduct(product);
+		// then add to in-memory list
 		inventory.add(product);
 		numberProducts++;
 	}
 	
+	/**
+	 * update product persistence
+	 */
+	public void updateProduct(Product product) {
+		// update in DB
+		dao.updateProduct(product);
+	}
+
+	/**
+	 * delete product persistence
+	 */
+	public void deleteProduct(Product product) {
+		// delete from DB
+		dao.deleteProduct(product);
+	}
 
 	/**
 	 * check if inventory is full or not

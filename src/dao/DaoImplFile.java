@@ -104,4 +104,20 @@ public class DaoImplFile implements Dao {
             return false;
         }
     }
+
+    // Empty implementations to satisfy new Dao interface methods. Kept intentionally blank for file-based DAO.
+    @Override
+    public void addProduct(Product product) {
+        // no-op for file DAO
     }
+
+    @Override
+    public void updateProduct(Product product) {
+        // no-op for file DAO
+    }
+
+    @Override
+    public void deleteProduct(Product product) {
+        // no-op for file DAO
+    }
+}
