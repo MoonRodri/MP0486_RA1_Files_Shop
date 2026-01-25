@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_MODULE_PATH" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="main.Shop"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="dam1_m03_uf6_jdbc_shop_solved"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="dam1_m03_uf6_jdbc_shop_solved"/>
+</launchConfiguration>

@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>dam1_m03_uf6_jdbc_shop_solved</groupId>
   <artifactId>dam1_m03_uf6_jdbc_shop_solved</artifactId>
@@ -20,6 +20,46 @@
         <configuration>
           <release>17</release>
         </configuration>
+      </plugin>
+      <!-- Ensure tests and exec run on the classpath to avoid adding JDK runtime jars to the module-path -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M7</version>
+        <configuration>
+          <!-- run tests on the classpath (prevents module-path conflicts like jrt.fs) -->
+          <useModulePath>false</useModulePath>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <!-- run the application on the classpath to avoid module conflicts -->
+          <mainClass>main.Shop</mainClass>
+          <classpathScope>runtime</classpathScope>
+        </configuration>
+      </plugin>
+      <!-- Create an executable fat-jar so the app can be run without module-path issues -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>main.Shop</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
