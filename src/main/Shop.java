@@ -7,7 +7,7 @@ import model.Client;
 import model.Employee;
 
 import dao.Dao;
-import dao.DaoImplJDBC;
+import dao.DaoImplHibernate;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,8 +31,8 @@ public class Shop {
 
 	final static double TAX_RATE = 1.04;
 
-	// DAO using JDBC implementation
-	private Dao dao = new DaoImplJDBC();
+	// DAO using Hibernate implementation
+	private Dao dao = new DaoImplHibernate();
 
 	public Shop() {
 		inventory = new ArrayList<Product>();
@@ -205,8 +205,9 @@ public class Shop {
 	}
 
 	private void closeDao() {
-		// TODO Auto-generated method stub
-		
+		if (this.dao != null) {
+			this.dao.disconnect();
+		}
 	}
 
 

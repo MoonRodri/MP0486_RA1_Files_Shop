@@ -10,6 +10,18 @@
             <version>8.0.25</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- Hibernate core -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.4.10.Final</version>
+        </dependency>
+        <!-- Simple SLF4J binding for logging during development -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.30</version>
+        </dependency>
     </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
