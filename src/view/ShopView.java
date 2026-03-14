@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.io.IOException;
 
 import main.Shop;
 import utils.Constants;
@@ -148,12 +151,32 @@ public class ShopView extends JFrame implements ActionListener, KeyListener
 
 	private void exportInventory()
 	{
+		// quick TCP check to detect MongoDB down before attempting DAO export
+		if (!isMongoAvailable()) {
+			JOptionPane.showMessageDialog(this, "Error al exportar inventario. MongoDB no disponible.", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		boolean ok = shop.writeInventory();
 		if (ok)
 			JOptionPane.showMessageDialog(this, "Inventario exportado !!", "Éxito",
 						JOptionPane.INFORMATION_MESSAGE);
 		else
 			JOptionPane.showMessageDialog(this, "Error al exportar inventario.", "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	private boolean isMongoAvailable() {
+		Socket socket = null;
+		try {
+			socket = new Socket();
+			socket.connect(new InetSocketAddress("localhost", 27017), 1500);
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try { socket.close(); } catch (IOException ex) { /* ignore */ }
+			}
+		}
 	}
 
 	public void openCashView()
