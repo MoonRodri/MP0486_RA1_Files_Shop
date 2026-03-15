@@ -146,7 +146,8 @@ public class DaoImplMongoDB implements Dao {
             Method remove = histColl.getClass().getMethod("remove", Class.forName("com.mongodb.DBObject"));
             Object empty = basicDBObjectClass.getConstructor().newInstance();
             remove.invoke(histColl, empty);
-            Method insert = histColl.getClass().getMethod("insert", Class.forName("com.mongodb.DBObject"));
+            // prefer the overload that accepts a java.util.List to avoid varargs/NoSuchMethod reflection issues
+            Method insert = histColl.getClass().getMethod("insert", Class.forName("java.util.List"));
             Method put = basicDBObjectClass.getMethod("put", String.class, Object.class);
             for (Product p : inventoryList) {
                 Object doc = basicDBObjectClass.getConstructor().newInstance();
@@ -160,7 +161,7 @@ public class DaoImplMongoDB implements Dao {
                 put.invoke(doc, "available", p.isAvailable());
                 put.invoke(doc, "stock", p.getStock());
                 put.invoke(doc, "created_at", new Date());
-                insert.invoke(histColl, doc);
+                insert.invoke(histColl, java.util.Arrays.asList(doc));
             }
             return true;
         } catch (Exception e) {
@@ -190,8 +191,9 @@ public class DaoImplMongoDB implements Dao {
             put.invoke(doc, "wholesalerPrice", wp);
             put.invoke(doc, "available", product.isAvailable());
             put.invoke(doc, "stock", product.getStock());
-            Method insert = inventoryColl.getClass().getMethod("insert", Class.forName("com.mongodb.DBObject"));
-            insert.invoke(inventoryColl, doc);
+            // prefer the overload that accepts a java.util.List to avoid varargs/NoSuchMethod reflection issues
+            Method insert = inventoryColl.getClass().getMethod("insert", Class.forName("java.util.List"));
+            insert.invoke(inventoryColl, java.util.Arrays.asList(doc));
         } catch (Exception e) {
             e.printStackTrace();
         }
