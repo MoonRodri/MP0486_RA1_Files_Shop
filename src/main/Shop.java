@@ -7,8 +7,7 @@ import model.Client;
 import model.Employee;
 
 import dao.Dao;
-import dao.DaoImplHibernate;
-import dao.DaoImplMongoDB;
+import dao.DaoImplObjectDB;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,8 +31,8 @@ public class Shop {
 
 	final static double TAX_RATE = 1.04;
 
-	// DAO using MongoDB implementation
-	private Dao dao = new DaoImplMongoDB();
+	// DAO using ObjectDB implementation
+	private Dao dao = new DaoImplObjectDB();
 
 	public Shop() {
 		inventory = new ArrayList<Product>();
